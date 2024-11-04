@@ -36,6 +36,6 @@ jobs:
             git checkout dev
             git reset --hard HEAD
             git pull origin dev
-            docker stack deploy -c /root/cvmsadmin/cvms_tracker_config/docker-compose.yml cvmsdjangodevstack 
+            docker stack deploy -c /root/cvmstracker/cvms_tracker_config/docker-compose.yml cvmsdjangodevstack 
 
           
