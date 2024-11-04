@@ -7,7 +7,7 @@ SECRET_KEY = "django-insecure--9!^hok=c8!&hr23in%zzqxd%s9i@8e23m1ek*jhw65a%z4fj$
 
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["tracker.afridev.com.ng"]
 
 
 # Application definition
@@ -124,3 +124,10 @@ STATICFILES_DIRS = [
 MEDIA_URL = "/media/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://tracker.afridev.com.ng",
+]
