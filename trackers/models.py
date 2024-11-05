@@ -4,6 +4,7 @@ from django.utils.text import slugify
 
 # from accounts_mobile.send import send_message
 
+
 class Consignment(models.Model):
     bill_of_ladding = models.CharField(
         max_length=150, unique=True, blank=True, null=True
@@ -40,11 +41,12 @@ class Consignment(models.Model):
 
 # To generate the Tracking ID
 class Tracker(models.Model):
-    consignment = models.ForeignKey(Consignment, related_name="tracker", on_delete=models.CASCADE)
+    consignment = models.ForeignKey(
+        Consignment, related_name="tracker", on_delete=models.CASCADE
+    )
     tracking_id = models.CharField(max_length=150, unique=True, blank=True, null=True)
     slug = models.CharField(max_length=250, blank=True, null=True)
-    user_id = models.CharField(max_length=50, unique=True, blank=True, null=True) 
-
+    user_id = models.CharField(max_length=50, unique=True, blank=True, null=True)
 
     def __str__(self):
         return f"{self.tracking_id} for {self.consignment.consignee}"
@@ -125,14 +127,8 @@ class SearchHistory(models.Model):
 
     def __str__(self):
         return f"search history for {self.consignment.bill_of_ladding}"
-    
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.consignment.bill_of_ladding) + str(uuid.uuid4())
         super().save(*args, **kwargs)
-
-
-
-
-
-
