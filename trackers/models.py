@@ -29,7 +29,7 @@ class Consignment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.consignee
+        return f"consignment"
 
     def save(self, *args, **kwargs):
 
@@ -54,7 +54,7 @@ class Tracker(models.Model):
     def save(self, *args, **kwargs):
 
         if not self.slug:
-            self.slug = slugify(self.bill_of_ladding) + str(uuid.uuid4())
+            self.slug = slugify(self.consignment.bill_of_ladding) + str(uuid.uuid4())
 
         if not self.tracking_id:
             prefix = "CUST"
