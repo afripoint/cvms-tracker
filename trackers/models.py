@@ -1,4 +1,5 @@
 from django.db import models
+from django.db import transaction
 import uuid
 from django.utils.text import slugify
 
@@ -36,8 +37,25 @@ class Consignment(models.Model):
         if not self.slug:
             self.slug = slugify(self.bill_of_ladding) + str(uuid.uuid4())
 
+        is_new = self._state.adding  # Check if this is a new instance
         super().save(*args, **kwargs)
 
+        # If this is a new consignment, create a tracker and initial stage
+        if is_new:
+            with transaction.atomic():
+                tracker = Tracker.objects.create(consignment=self)
+
+                # Create initial stage for the tracker
+                Stages.objects.create(
+                    tracker=tracker,
+                    shipping_status="in transit"  # or any default status
+                )
+
+                # Create a tracking record for the initial tracking creation
+                TrackingRecord.objects.create(
+                    created_by=self,
+                    tracking_status="tracking created"
+                )
 
 # To generate the Tracking ID
 class Tracker(models.Model):

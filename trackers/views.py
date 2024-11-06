@@ -129,6 +129,7 @@ class GetTeaserAPIVIew(APIView):
 
             response = {
                 "message": "Teaser fetch successfully",
+                "bill_of_ladding": serializer.data.get("bill_of_ladding"),
                 "description_of_goods": serializer.data.get("description_of_goods"),
                 "vessel_voyage": serializer.data.get("vessel_voyage"),
                 "quantity": serializer.data.get("quantity"),
