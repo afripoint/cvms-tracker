@@ -37,25 +37,8 @@ class Consignment(models.Model):
         if not self.slug:
             self.slug = slugify(self.bill_of_ladding) + str(uuid.uuid4())
 
-        is_new = self._state.adding  # Check if this is a new instance
         super().save(*args, **kwargs)
 
-        # If this is a new consignment, create a tracker and initial stage
-        if is_new:
-            with transaction.atomic():
-                tracker = Tracker.objects.create(consignment=self)
-
-                # Create initial stage for the tracker
-                Stages.objects.create(
-                    tracker=tracker,
-                    shipping_status="in transit"  # or any default status
-                )
-
-                # Create a tracking record for the initial tracking creation
-                TrackingRecord.objects.create(
-                    created_by=self,
-                    tracking_status="tracking created"
-                )
 
 # To generate the Tracking ID
 class Tracker(models.Model):
@@ -79,7 +62,25 @@ class Tracker(models.Model):
             count = Consignment.objects.count() + 1
             self.tracking_id = f"{prefix}-{count:06d}"
 
+        # is_new = self._state.adding  # Check if this is a new instance
+
         super().save(*args, **kwargs)
+
+        # If this is a new consignment, create a tracker and initial stage
+        # if is_new:
+        #     with transaction.atomic():
+        #         tracker = Tracker.objects.create(consignment=self)
+
+        #         # Create initial stage for the tracker
+        #         Stages.objects.create(
+        #             tracker=tracker,
+        #             shipping_status="in transit",  # or any default status
+        #         )
+
+        #         # Create a tracking record for the initial tracking creation
+        #         TrackingRecord.objects.create(
+        #             created_by=self, tracking_status="tracking created"
+        #         )
 
 
 class Stages(models.Model):
@@ -132,6 +133,7 @@ class TrackingRecord(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.created_by.bill_of_ladding) + str(uuid.uuid4())
+
         super().save(*args, **kwargs)
 
 
