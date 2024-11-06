@@ -9,7 +9,11 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from trackers.models import Consignment, SearchHistory, Stages, Tracker
-from trackers.serializers import ConsignmentSerializer, GetTeaserSerialiser, TrackerSerializer
+from trackers.serializers import (
+    ConsignmentSerializer,
+    GetTeaserSerialiser,
+    TrackerSerializer,
+)
 from trackers.utils import call_custom_api_request
 
 
@@ -85,7 +89,18 @@ class ConsignmentAPIView(APIView):
 
         # Bulk create new records in one operation
         if new_records:
-            Consignment.objects.bulk_create(new_records)
+            created_consignments = Consignment.objects.bulk_create(new_records)
+
+            # Create Tracker, Stages, and TrackingRecord entries for each new consignment
+            for consignment in created_consignments:
+                # Create a new Tracker
+                tracker = Tracker.objects.create(consignment=consignment)
+
+                # Create an initial Stage entry for this Tracker
+                Stages.objects.create(
+                    tracker=tracker,
+                    shipping_status="in transit",  # Set initial shipping status
+                )
 
         response = {
             "message": "Consignment processed successfully",
@@ -115,17 +130,7 @@ class GetTeaserAPIVIew(APIView):
                 Consignment, bill_of_ladding=bill_of_ladding
             )
 
-            # import pdb; pdb.set_trace()
-            # tracker = get_object_or_404(Tracker, consignment=consignment)
-            # stages = get_object_or_404(Stages, tracker=tracker)
-
             serializer = ConsignmentSerializer(consignment)
-
-            # SearchHistory.objects.create(
-            #     consignment=consignment,
-            #     stages=stages,
-            #     tracker=tracker,
-            # )
 
             response = {
                 "message": "Teaser fetch successfully",
