@@ -1,4 +1,5 @@
 from django.db import models
+from django.db import transaction
 import uuid
 from django.utils.text import slugify
 
@@ -29,7 +30,7 @@ class Consignment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.consignee
+        return f"consignment"
 
     def save(self, *args, **kwargs):
 
@@ -54,14 +55,32 @@ class Tracker(models.Model):
     def save(self, *args, **kwargs):
 
         if not self.slug:
-            self.slug = slugify(self.bill_of_ladding) + str(uuid.uuid4())
+            self.slug = slugify(self.consignment.bill_of_ladding) + str(uuid.uuid4())
 
         if not self.tracking_id:
             prefix = "CUST"
             count = Consignment.objects.count() + 1
             self.tracking_id = f"{prefix}-{count:06d}"
 
+        # is_new = self._state.adding  # Check if this is a new instance
+
         super().save(*args, **kwargs)
+
+        # If this is a new consignment, create a tracker and initial stage
+        # if is_new:
+        #     with transaction.atomic():
+        #         tracker = Tracker.objects.create(consignment=self)
+
+        #         # Create initial stage for the tracker
+        #         Stages.objects.create(
+        #             tracker=tracker,
+        #             shipping_status="in transit",  # or any default status
+        #         )
+
+        #         # Create a tracking record for the initial tracking creation
+        #         TrackingRecord.objects.create(
+        #             created_by=self, tracking_status="tracking created"
+        #         )
 
 
 class Stages(models.Model):
@@ -114,6 +133,7 @@ class TrackingRecord(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.created_by.bill_of_ladding) + str(uuid.uuid4())
+
         super().save(*args, **kwargs)
 
 
