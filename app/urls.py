@@ -9,7 +9,7 @@ from rest_framework import permissions, routers
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Custom Verification Management System",
+        title="Custom Status Tracker",
         default_version="v1",
         description="",
     ),

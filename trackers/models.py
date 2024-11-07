@@ -46,8 +46,8 @@ class Tracker(models.Model):
         Consignment, related_name="tracker", on_delete=models.CASCADE
     )
     tracking_id = models.CharField(max_length=150, unique=True, blank=True, null=True)
-    slug = models.CharField(max_length=250, blank=True, null=True)
-    user_id = models.CharField(max_length=50, unique=True, blank=True, null=True)
+    slug = models.CharField(max_length=250, unique=True, blank=True, null=True)
+    user_id = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return f"{self.tracking_id} for {self.consignment.consignee}"
@@ -59,29 +59,12 @@ class Tracker(models.Model):
 
         if not self.tracking_id:
             prefix = "CUST"
-            count = Consignment.objects.count() + 1
-            self.tracking_id = f"{prefix}-{count:06d}"
-
-        # is_new = self._state.adding  # Check if this is a new instance
+            unique_id = uuid.uuid4().hex[:6].upper()
+            self.tracking_id = f"{prefix}-{unique_id}"
 
         super().save(*args, **kwargs)
 
-        # If this is a new consignment, create a tracker and initial stage
-        # if is_new:
-        #     with transaction.atomic():
-        #         tracker = Tracker.objects.create(consignment=self)
-
-        #         # Create initial stage for the tracker
-        #         Stages.objects.create(
-        #             tracker=tracker,
-        #             shipping_status="in transit",  # or any default status
-        #         )
-
-        #         # Create a tracking record for the initial tracking creation
-        #         TrackingRecord.objects.create(
-        #             created_by=self, tracking_status="tracking created"
-        #         )
-
+       
 
 class Stages(models.Model):
     SHIPMENT_STATUS = (
@@ -108,7 +91,7 @@ class Stages(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Shipment status of the {self.consignment.consignee} with {self.tracking.tracking_id}"
+        return f"Shipment status of the {self.tracker.consignment.consignee} with {self.tracker.tracking_id}"
 
 
 class TrackingRecord(models.Model):
