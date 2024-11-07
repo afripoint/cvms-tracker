@@ -8,6 +8,7 @@ SECRET_KEY = "django-insecure--9!^hok=c8!&hr23in%zzqxd%s9i@8e23m1ek*jhw65a%z4fj$
 DEBUG = True
 
 ALLOWED_HOSTS = ["tracker.afridev.com.ng"]
+# ALLOWED_HOSTS = ["*"]
 
 
 # Application definition

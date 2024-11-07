@@ -8,10 +8,11 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from trackers.models import Consignment, SearchHistory, Stages, Tracker
+from trackers.models import Consignment, SearchHistory, Stages, Tracker, TrackingRecord
 from trackers.serializers import (
     ConsignmentSerializer,
     GetTeaserSerialiser,
+    StageSerializer,
     TrackerSerializer,
 )
 from trackers.utils import call_custom_api_request
@@ -99,13 +100,20 @@ class ConsignmentAPIView(APIView):
                 # Create an initial Stage entry for this Tracker
                 Stages.objects.create(
                     tracker=tracker,
-                    shipping_status="in transit",  # Set initial shipping status
+                    shipping_status="in transit",
+                )
+
+                TrackingRecord.objects.create(
+                    created_by=consignment,
+                    updated_by="cvms admin",
+                    tracking_status="tracking created",
                 )
 
         response = {
             "message": "Consignment processed successfully",
             "new_records": len(new_records),
             "updated_records": len(consignments) - len(new_records),
+            "tracker_slug": tracker.slug,
         }
         return Response(data=response, status=status.HTTP_200_OK)
 
@@ -126,14 +134,13 @@ class GetTeaserAPIVIew(APIView):
             )
 
         try:
-            consignment = get_object_or_404(
-                Consignment, bill_of_ladding=bill_of_ladding
-            )
+            consignment = Consignment.objects.get(bill_of_ladding=bill_of_ladding)
+            tracker = Tracker.objects.filter(consignment=consignment).first()
 
             serializer = ConsignmentSerializer(consignment)
 
             response = {
-                "message": "Teaser fetch successfully",
+                "message": "Teaser fetched successfully",
                 "bill_of_ladding": serializer.data.get("bill_of_ladding"),
                 "description_of_goods": serializer.data.get("description_of_goods"),
                 "vessel_voyage": serializer.data.get("vessel_voyage"),
@@ -141,6 +148,9 @@ class GetTeaserAPIVIew(APIView):
                 "hs_code": serializer.data.get("hs_code"),
                 "port_of_loading": serializer.data.get("port_of_loading"),
                 "port_of_landing": serializer.data.get("port_of_landing"),
+                "tracker_slug": (
+                    tracker.slug if tracker else None
+                ),  # Add slug if tracker exists
             }
             return Response(response, status=status.HTTP_200_OK)
 
@@ -150,25 +160,76 @@ class GetTeaserAPIVIew(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+        except Exception as e:
+            return Response(
+                {"error": "An unexpected error occurred.", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
 
 # generate tracking ID
-class TrackingIDCreateAPIView(APIView):
+class TrackingIDGenerateAPIView(APIView):
     @swagger_auto_schema(
-        operation_summary="This endpoint creates a tracking ID for a consignment and bill of ladding",
-        operation_description="Creates tracking Id for a given consignment",
+        operation_summary="Generate a tracking ID for a consignment based on bill_of_ladding",
+        operation_description="Updates the Tracker fields based on the provided bill_of_ladding.",
         request_body=TrackerSerializer,
     )
-    def post(self, request, *args, **kwargs):
-        serializer = TrackerSerializer(data=request.data)
+    def patch(self, request, slug):
+        tracker = get_object_or_404(Tracker, slug=slug)
+        serializer = TrackerSerializer(tracker, data=request.data, partial=True)
+
         if serializer.is_valid():
-            tracker = serializer.save()
-            return Response(
-                {
-                    "message": "Tracking ID created successfully.",
-                    "tracking_id": tracker.tracking_id,
-                    "consignment": tracker.consignment.bill_of_ladding,
-                    "user_id": tracker.user_id,
-                },
-                status=status.HTTP_201_CREATED,
-            )
+            serializer.save()
+
+            response = {
+                "messaage": "Tracking_id generated successfully",
+                "data": serializer.data,
+            }
+
+            return Response(data=response, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ConsignmentStatusAPIView(APIView):
+    @swagger_auto_schema(
+        operation_summary="Get the current stage/status of a consignment",
+        operation_description="Get the current stage/status of a consignment",
+    )
+    def get(self, request, bill_of_ladding):
+        try:
+            consignment = Consignment.objects.get(bill_of_ladding=bill_of_ladding)
+            tracker = Tracker.objects.get(consignment=consignment)
+            stages = Stages.objects.get(tracker=tracker)
+            serializer = StageSerializer(stages)
+
+            response = {
+                "message": serializer.data,
+            }
+            return Response(data=response, status=status.HTTP_200_OK)
+
+        except Consignment.DoesNotExist:
+            return Response(
+                {"error": "Consignment with the specified bill_of_ladding not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        except Tracker.DoesNotExist:
+            return Response(
+                {"error": "Tracker for the specified consignment not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": "An unexpected error occurred.", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class UpdateStageAPIView(APIView):
+    @swagger_auto_schema(
+        operation_summary="Get the current stage/status of a consignment",
+        operation_description="Get the current stage/status of a consignment",
+    )
+    def patch(self, request):
+        pass
