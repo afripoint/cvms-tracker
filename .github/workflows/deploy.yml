@@ -35,8 +35,6 @@ jobs:
             cd /root/cvmstracker/cvms_tracker_config
             git checkout staging
             git reset --hard HEAD
-            docker stack rm cvmstrackerstagingstack
-            docker system prune
             git pull origin staging
             docker stack deploy -c /root/cvmstracker/cvms_tracker_config/docker-compose.yml cvmstrackerstagingstack 
 
