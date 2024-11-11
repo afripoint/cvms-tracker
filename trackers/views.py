@@ -97,6 +97,8 @@ class ConsignmentAPIView(APIView):
                 # Create a new Tracker
                 tracker = Tracker.objects.create(consignment=consignment)
 
+                # import pdb; pdb.set_trace()
+
                 # Create an initial Stage entry for this Tracker
                 Stages.objects.create(
                     tracker=tracker,
@@ -113,7 +115,7 @@ class ConsignmentAPIView(APIView):
             "message": "Consignment processed successfully",
             "new_records": len(new_records),
             "updated_records": len(consignments) - len(new_records),
-            "tracker_slug": tracker.slug,
+            # "tracker_slug": tracker.slug if new_records else None,
         }
         return Response(data=response, status=status.HTTP_200_OK)
 
