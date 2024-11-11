@@ -142,5 +142,5 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://tracker.afridev.com.ng",
+    "https://tracker.cvmsnigeria.com",
 ]
