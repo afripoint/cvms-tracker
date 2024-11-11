@@ -38,7 +38,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-     # -------CORS-----
+    # -------CORS-----
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     # -------CORS-----
@@ -80,7 +80,7 @@ WSGI_APPLICATION = "app.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "cvmstrackerdb",
+        "NAME": "cvmstrackerstagingdb",
         "USER": "afriauthdb_owner",
         "PASSWORD": "ZfxjP54cLIdz",
         "HOST": "ep-silent-frost-a2griadk.eu-central-1.aws.neon.tech",
