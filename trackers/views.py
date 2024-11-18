@@ -186,6 +186,7 @@ class TrackingIDGenerateAPIView(APIView):
             response = {
                 "messaage": "Tracking_id generated successfully",
                 "data": serializer.data,
+                
             }
 
             return Response(data=response, status=status.HTTP_200_OK)
@@ -206,6 +207,13 @@ class ConsignmentStatusAPIView(APIView):
 
             response = {
                 "message": serializer.data,
+                "bill_of_ladding": consignment.bill_of_ladding,
+                "description_of_goods": consignment.description_of_goods,
+                "vessel_voyage": consignment.vessel_voyage,
+                "quantity": consignment.quantity,
+                "hs_code": consignment.hs_code,
+                "port_of_loading": consignment.port_of_loading,
+                "port_of_landing": consignment.port_of_loading
             }
             return Response(data=response, status=status.HTTP_200_OK)
 
