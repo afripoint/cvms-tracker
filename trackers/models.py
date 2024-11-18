@@ -68,18 +68,12 @@ class Tracker(models.Model):
 
 class Stages(models.Model):
     SHIPMENT_STATUS = (
-        ("in transit", "In Transit"),
-        ("cleared", "Cleared"),
-        ("on hold", "On Hold"),
-        ("inspection completed", "Inspection Completed"),
-        ("pending inspection", "Pending Inspection"),
-        ("inspection hold", "Inspection Hold"),
-        ("in warehouse", "In Warehouse"),
-        ("pending transfer", "Pending Transfer"),
-        ("warehouse exit initiated", "Warehouse Exit Initiated"),
         ("in terminal", "In Terminal"),
-        ("cleared from terminal", "Cleared From Terminal"),
-        ("pending terminal processing", "Pending Terminal Processing"),
+        ("in warehouse", "In Warehouse"),
+        ("undergoing inspection", "Undergoing Inspection"),
+        ("payment", "Payment"),
+        ("cleared", "Cleared"),
+        ("in transit", "In Transit"),
     )
     tracker = models.ForeignKey(
         Tracker, related_name="stages", on_delete=models.CASCADE
