@@ -60,6 +60,8 @@ class ConsignmentAPIView(APIView):
                     gross_weight=consignment_data["gross_weight"],
                     eta=consignment_data["eta"],
                     vessel_voyage=consignment_data["vessel_voyage"],
+                    charges=consignment_data["charges"],
+                    container_id=consignment_data["container_id"],
                     quantity=consignment_data["quantity"],
                     hs_code=consignment_data["hs_code"],
                     port_of_loading=consignment_data["port_of_loading"],
@@ -81,6 +83,8 @@ class ConsignmentAPIView(APIView):
                         gross_weight=consignment_data["gross_weight"],
                         eta=consignment_data["eta"],
                         vessel_voyage=consignment_data["vessel_voyage"],
+                        charges=consignment_data["charges"],
+                        container_id=consignment_data["container_id"],
                         quantity=consignment_data["quantity"],
                         hs_code=consignment_data["hs_code"],
                         port_of_loading=consignment_data["port_of_loading"],
@@ -186,7 +190,6 @@ class TrackingIDGenerateAPIView(APIView):
             response = {
                 "messaage": "Tracking_id generated successfully",
                 "data": serializer.data,
-                
             }
 
             return Response(data=response, status=status.HTTP_200_OK)
@@ -212,8 +215,11 @@ class ConsignmentStatusAPIView(APIView):
                 "vessel_voyage": consignment.vessel_voyage,
                 "quantity": consignment.quantity,
                 "hs_code": consignment.hs_code,
+                "charges": consignment.charges,
+                "eta": consignment.eta,
+                "container_id": consignment.container_id,
                 "port_of_loading": consignment.port_of_loading,
-                "port_of_landing": consignment.port_of_loading
+                "port_of_landing": consignment.port_of_loading,
             }
             return Response(data=response, status=status.HTTP_200_OK)
 
