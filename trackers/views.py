@@ -1,14 +1,11 @@
 from django.shortcuts import render
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from rest_framework import status
-import requests
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAdminUser
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from trackers.models import Consignment, SearchHistory, Stages, Tracker, TrackingRecord
+from trackers.authentication import APIKeyAuthentication
+from trackers.models import Consignment, Stages, Tracker, TrackingRecord
 from trackers.serializers import (
     ConsignmentSerializer,
     GetTeaserSerialiser,
@@ -125,6 +122,7 @@ class ConsignmentAPIView(APIView):
 
 
 class GetTeaserAPIVIew(APIView):
+    authentication_classes = [APIKeyAuthentication]
     @swagger_auto_schema(
         operation_summary="Get the consignment teaser for an importer using the bill of ladding",
         operation_description="Get the consignment teaser for an importer using the bill of laddin",
@@ -175,6 +173,7 @@ class GetTeaserAPIVIew(APIView):
 
 # generate tracking ID
 class TrackingIDGenerateAPIView(APIView):
+    authentication_classes = [APIKeyAuthentication]
     @swagger_auto_schema(
         operation_summary="Generate a tracking ID for a consignment based on bill_of_ladding",
         operation_description="Updates the Tracker fields based on the provided bill_of_ladding.",
@@ -197,6 +196,7 @@ class TrackingIDGenerateAPIView(APIView):
 
 
 class ConsignmentStatusAPIView(APIView):
+    authentication_classes = [APIKeyAuthentication]
     @swagger_auto_schema(
         operation_summary="Get the current stage/status of a consignment",
         operation_description="Get the current stage/status of a consignment",
