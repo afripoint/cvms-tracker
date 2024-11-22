@@ -144,3 +144,7 @@ CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "https://tracker.afridev.com.ng",
 ]
+
+
+
+API_KEY = "rbAZcgfSXQLiHHCzYk8pDU9svNpnoFNZ"
