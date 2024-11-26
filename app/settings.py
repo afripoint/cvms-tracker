@@ -32,16 +32,16 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-     # -------CORS-----
-    "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    # -------CORS-----
+    #  # -------CORS-----
+    # "django.middleware.common.CommonMiddleware",
+    # # -------CORS-----
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -140,6 +140,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+
+
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "x-api-key",
+]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://tracker.afridev.com.ng",
