@@ -121,6 +121,7 @@ class ConsignmentAPIView(APIView):
         return Response(data=response, status=status.HTTP_200_OK)
 
 
+# Get the teaser
 class GetTeaserAPIVIew(APIView):
     authentication_classes = [APIKeyAuthentication]
     @swagger_auto_schema(
